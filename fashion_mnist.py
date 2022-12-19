@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 
 (ds_train, ds_test), ds_info = tfds.load(
-    'mnist',
+    'fashion_mnist',
     split=['train', 'test'],
     shuffle_files=True,
     as_supervised=True,
@@ -49,6 +49,6 @@ model.compile(
 # Treinando o modelo
 model.fit(
     ds_train,
-    epochs=100,
+    epochs=10,
     validation_data=ds_test
 )

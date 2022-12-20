@@ -3,10 +3,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-base = pd.read_csv('iris.csv')
 
-xs = base.iloc[:, 0:4].values
-ys = base.iloc[:, 4].values
+# Loading the dataset
+base = pd.read_csv('iris.csv')
+base_test = pd.read_csv('irisTest.csv')
+
+x_train = base.iloc[:, 0:4].values
+y_train = base.iloc[:, 4].values
+
+x_test = base_test.iloc[:, 0:4].values
+y_test = base_test.iloc[:, 4].values
 
 values = {
     'Iris-setosa': 0,
@@ -14,33 +20,41 @@ values = {
     'Iris-virginica': 2
 }
 
-xs = xs.astype('float32')
-ys = np.asarray([values[y] for y in ys], dtype=np.int32)
+x_train = x_train.astype('float32')
+y_train = np.asarray([values[y] for y in y_train], dtype=np.int32)
 
-#for x in xs: print(type(x))
-#print(ys)
-#for y in ys: print(type(y))
+#for x in x_train: print(type(x))
+#for y in y_train: print(type(y))
 
+# Building the model
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(16, activation='relu'),
     tf.keras.layers.Dense(4, activation='softmax')
 ])
 
+# Compiling the model
 model.compile(
     optimizer='adam',
     loss='sparse_categorical_crossentropy',
     metrics=['accuracy']
 )
 
-print(xs.dtype)
+print(x_train.dtype)
 
+# Training the model
 model_fit = model.fit(
-    xs,
-    ys,
+    x_train,
+    y_train,
     epochs=50,
-    batch_size=1
+    batch_size=1,
+    verbose=0
 )
 
+# Evaluating the model
+predictions = model.predict(x_test)
+print(predictions)
+
+# Plotting the results
 plt.plot(model_fit.history['accuracy'])
 plt.plot(model_fit.history['loss'])
 plt.title('Model Accuracy')
@@ -48,6 +62,7 @@ plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.show()
 
+# Saving the model
 save = input('Save model? (y/n): ')
 if save == 'y':
     model.save('flowerModel.h5')
@@ -55,4 +70,3 @@ if save == 'y':
 else:
     print('Model not saved!')
 
-predictions = model.predict(xs)
